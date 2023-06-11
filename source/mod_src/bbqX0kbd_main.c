@@ -686,6 +686,9 @@ static int bbqX0kbd_probe(struct i2c_client *client, const struct i2c_device_id 
 		return returnValue;
 	}
 
+	// Register the battery sysfs attribute group
+    sysfs_create_group(&client->dev.kobj, &battery_attr_group);	
+
 	return 0;
 }
 
@@ -716,6 +719,41 @@ static void bbqX0kbd_shutdown(struct i2c_client *client)
 #endif
 
 }
+
+//battery
+static struct device_attribute battery_voltage_attr = {
+    .attr = {
+        .name = "battery_voltage",
+        .mode = S_IRUGO, // Read-only access
+    },
+    .show = battery_voltage_show, // The callback function for attribute read operation
+};
+
+static ssize_t battery_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+    // Read the battery level from your driver
+    uint16_t battery_voltage = 2047;
+
+    // Convert the battery level to a string representation
+    char battery_voltage_str[16];
+    snprintf(battery_voltage_str, sizeof(battery_voltage_str), "%d", battery_voltage);
+
+    // Copy the battery level string to the buffer
+    strcpy(buf, battery_voltage_str);
+
+    // Return the number of bytes written
+    return strlen(battery_voltage_str);
+}
+
+static struct attribute *battery_attrs[] = {
+    &battery_voltage_attr.attr,
+    NULL,
+};
+
+static struct attribute_group battery_attr_group = {
+    .name = "power_supply",
+    .attrs = battery_attrs,
+};
 
 static struct i2c_driver bbqX0kbd_driver = {
 	.driver = {

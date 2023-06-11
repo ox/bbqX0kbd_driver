@@ -6,6 +6,7 @@
 #ifndef BBQX0KBD_MAIN_H_
 #define BBQX0KBD_MAIN_H_
 
+#include <linux/device.h>
 #include <linux/backlight.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
