@@ -190,6 +190,22 @@ static void bbqX0kbd_set_brightness(struct bbqX0kbd_data *bbqX0kbd_data, unsigne
 }
 
 //battery
+static ssize_t battery_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+    // Read the battery level from your driver
+    uint16_t battery_voltage = 2047;
+
+    // Convert the battery level to a string representation
+    char battery_voltage_str[16];
+    snprintf(battery_voltage_str, sizeof(battery_voltage_str), "%d", battery_voltage);
+
+    // Copy the battery level string to the buffer
+    strcpy(buf, battery_voltage_str);
+
+    // Return the number of bytes written
+    return strlen(battery_voltage_str);
+}
+
 static struct device_attribute battery_voltage_attr = {
     .attr = {
         .name = "battery_voltage",
@@ -737,23 +753,6 @@ static void bbqX0kbd_shutdown(struct i2c_client *client)
 	}
 #endif
 
-}
-
-//battery
-static ssize_t battery_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    // Read the battery level from your driver
-    uint16_t battery_voltage = 2047;
-
-    // Convert the battery level to a string representation
-    char battery_voltage_str[16];
-    snprintf(battery_voltage_str, sizeof(battery_voltage_str), "%d", battery_voltage);
-
-    // Copy the battery level string to the buffer
-    strcpy(buf, battery_voltage_str);
-
-    // Return the number of bytes written
-    return strlen(battery_voltage_str);
 }
 
 static struct i2c_driver bbqX0kbd_driver = {
