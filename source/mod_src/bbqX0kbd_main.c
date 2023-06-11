@@ -189,6 +189,25 @@ static void bbqX0kbd_set_brightness(struct bbqX0kbd_data *bbqX0kbd_data, unsigne
 #endif
 }
 
+//battery
+static struct device_attribute battery_voltage_attr = {
+    .attr = {
+        .name = "battery_voltage",
+        .mode = S_IRUGO, // Read-only access
+    },
+    .show = battery_voltage_show, // The callback function for attribute read operation
+};
+
+static struct attribute *battery_attrs[] = {
+    &battery_voltage_attr.attr,
+    NULL,
+};
+
+static struct attribute_group battery_attr_group = {
+    .name = "power_supply",
+    .attrs = battery_attrs,
+};
+
 #if (BBQX0KBD_INT == BBQX0KBD_NO_INT)
 static void bbqX0kbd_work_handler(struct work_struct *work_struct)
 {
@@ -721,14 +740,6 @@ static void bbqX0kbd_shutdown(struct i2c_client *client)
 }
 
 //battery
-static struct device_attribute battery_voltage_attr = {
-    .attr = {
-        .name = "battery_voltage",
-        .mode = S_IRUGO, // Read-only access
-    },
-    .show = battery_voltage_show, // The callback function for attribute read operation
-};
-
 static ssize_t battery_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     // Read the battery level from your driver
@@ -744,16 +755,6 @@ static ssize_t battery_voltage_show(struct device *dev, struct device_attribute 
     // Return the number of bytes written
     return strlen(battery_voltage_str);
 }
-
-static struct attribute *battery_attrs[] = {
-    &battery_voltage_attr.attr,
-    NULL,
-};
-
-static struct attribute_group battery_attr_group = {
-    .name = "power_supply",
-    .attrs = battery_attrs,
-};
 
 static struct i2c_driver bbqX0kbd_driver = {
 	.driver = {
